@@ -1,16 +1,16 @@
 import axios, { AxiosResponse } from "axios";
-import { API_URL } from "./api";
+import { API_URL } from "./config";
 
 const axiosService = axios.create({
-  baseURL: API_URL,
+    baseURL: API_URL,
 });
 
-export function fetcher(url: string, params: string): Promise<AxiosResponse> {
-  return axiosService
-    .get(
-      `${url}${params}&function=TIME_SERIES_DAILY&outputsize=compact&apikey=${process.env.REACT_APP_API_KEY}`
-    )
-    .then((res) => res.data);
+export async function fetcher(url: string, params: string): Promise<AxiosResponse> {
+    const res = await axiosService
+        .get(
+            `${url}${params}&function=TIME_SERIES_DAILY&outputsize=compact&apikey=${process.env.REACT_APP_API_KEY}`
+        );
+    return res.data;
 }
 
 export default axiosService;
