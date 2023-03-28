@@ -1,35 +1,56 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+
+import Chart from 'react-apexcharts'
+import useAlphaVantage from './useAlphaVantage';
+
+import { symbols } from './config';
+
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+
+
+  const [symbol, setSymbol] = useState("MSFT");
+
+  const dataAlpha = useAlphaVantage(`?symbol=${symbol}`);
+
+  if (!dataAlpha) return <div className='loading'>Loading...</div>;
+
+  const state = {
+    series: [{
+      data: dataAlpha
+    }],
+    options: {
+      chart: {
+        type: 'candlestick',
+        height: 350
+      },
+      title: {
+        text: 'Candlestick Chart',
+        align: 'left'
+      },
+      xaxis: {
+        type: 'datetime'
+      },
+      yaxis: {
+        tooltip: {
+          enabled: true
+        }
+      }
+    },  
+  };
 
   return (
-    <div className="App">
+    <div>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <select className="select" value={symbol} onChange={e => {setSymbol(e.target.value)}}>
+          {symbols.map(symbol => <option key={symbol} value={symbol}>{symbol}</option>)}
+        </select>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      {/* @ts-ignore */}
+      <Chart options={state.options} series={state.series} type="candlestick" height={350} />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
